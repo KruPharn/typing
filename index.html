@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>แบบฝึกพิมพ์ออนไลน์ โดย..ครูสมภาร นิยม</title>
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif, sans-serif;
+      background-color: #f0f0f0;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+    textarea, input {
+      width: 100%;
+      font-size: 18px;
+      padding: 10px;
+      margin-top: 10px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 10px;
+      font-size: 16px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    .correct {
+      color: green;
+    }
+    .incorrect {
+      color: red;
+    }
+    .student-info {
+      text-align: left;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>แบบฝึกพิมพ์ออนไลน์ โดย..ครูสมภาร นิยม</h2>
+
+    <div class="student-info">
+      <label>ชื่อ: <input type="text" id="fname" autocomplete="off"></label><br>
+      <label>นามสกุล: <input type="text" id="lname" autocomplete="off"></label><br>
+      <label>เลขที่: <input type="text" id="no" autocomplete="off"></label><br>
+      <label>ชั้น: <input type="text" id="classroom" autocomplete="off"></label><br>
+    </div>
+
+    <p id="prompt" style="font-weight: bold; font-size: 20px; margin-top: 20px;"></p>
+    <textarea id="inputArea" rows="2" placeholder="พิมพ์คำที่เห็นด้านบน..."></textarea><br>
+    <button id="checkBtn">OK</button>
+
+    <p id="result" style="margin-top: 15px; font-size: 18px;"></p>
+    <p id="score" style="margin-top: 20px; font-size: 18px; font-weight: bold;"></p>
+  </div>
+
+  <script>
+    const prompts = [
+      "ฉันรักพ่อและแม่", "ฉันจะขยันฝึกพิมพ์", "ฉันเป็นคนเก่ง", "โรงเรียนนาจะหลวย", "(กรป.กลางอุปถัมภ์)",
+      "nlp.ac.th", "practice", "kahoot.it", "perfect", "education"
+    ];
+
+    let usedPrompts = [];
+    let currentPrompt = "";
+    let score = 0;
+    let count = 0;
+    const maxCount = 10;
+
+    function generatePrompt() {
+      if (usedPrompts.length === prompts.length) {
+        usedPrompts = [];
+      }
+
+      let index;
+      do {
+        index = Math.floor(Math.random() * prompts.length);
+      } while (usedPrompts.includes(index));
+
+      usedPrompts.push(index);
+      currentPrompt = prompts[index];
+      document.getElementById("prompt").innerText = `คำที่ ${count + 1}: ${currentPrompt}`;
+      document.getElementById("inputArea").value = "";
+      document.getElementById("result").innerText = "";
+    }
+
+    function checkTyping() {
+      const input = document.getElementById("inputArea").value.trim();
+      const result = document.getElementById("result");
+      const fname = document.getElementById("fname").value.trim();
+      const lname = document.getElementById("lname").value.trim();
+      const no = document.getElementById("no").value.trim();
+      const classroom = document.getElementById("classroom").value.trim();
+      const scoreDisplay = document.getElementById("score");
+      const checkBtn = document.getElementById("checkBtn");
+
+      if (!fname || !lname || !no || !classroom) {
+        result.innerHTML = "❗️ <span class='incorrect'>กรุณากรอกข้อมูลให้ครบก่อนทำแบบฝึกหัด</span>";
+        return;
+      }
+
+      if (count >= maxCount) {
+        // แบบฝึกจบแล้ว แสดงผลสรุป
+        result.innerHTML = "";
+        scoreDisplay.innerHTML = `📋 สรุปผลการพิมพ์<br>ชื่อ: ${fname} ${lname} | เลขที่: ${no} | ชั้น: ${classroom}<br>คะแนนรวม: ${score} / ${maxCount * 10}<br>📸 กรุณาแค็ปหน้าจอผลลัพธ์นี้แล้วส่งให้ครูทางไลน์`;
+        checkBtn.disabled = true;
+        document.getElementById("inputArea").disabled = true;
+        document.getElementById("prompt").innerText = "แบบฝึกหัดเสร็จสิ้น ขอบคุณครับ!";
+        return;
+      }
+
+      if (input === currentPrompt) {
+        score += 10;
+        result.innerHTML = `✅ <span class='correct'>พิมพ์ถูกต้อง! +10 คะแนน</span>`;
+      } else {
+        result.innerHTML = `❌ <span class='incorrect'>พิมพ์ผิด! ไม่ได้คะแนน</span>`;
+      }
+
+      count++;
+
+      if (count >= maxCount) {
+        // แสดงคะแนนสรุปทันที
+        scoreDisplay.innerHTML = `📋 สรุปผลการพิมพ์<br>ชื่อ: ${fname} ${lname} | เลขที่: ${no} | ชั้น: ${classroom}<br>คะแนนรวม: ${score} / ${maxCount * 10}<br>📸 กรุณาแค็ปหน้าจอผลลัพธ์นี้แล้วส่งให้ครูทางไลน์`;
+        document.getElementById("prompt").innerText = "แบบฝึกหัดเสร็จสิ้น ขอบคุณครับ!";
+        checkBtn.disabled = true;
+        document.getElementById("inputArea").disabled = true;
+        result.innerHTML = "";
+      } else {
+        generatePrompt();
+      }
+    }
+
+    document.getElementById("checkBtn").addEventListener("click", checkTyping);
+
+    window.onload = () => {
+      generatePrompt();
+    };
+  </script>
+</body>
+</html>
